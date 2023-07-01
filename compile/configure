@@ -1,0 +1,50 @@
+#!/bin/sh
+
+CXX=g++
+CXXFLAGS="-Wall -Wextra -pedantic -std=c++11"
+
+TARGET=prime
+
+# configure スクリプトの引数をチェック
+if [ $# -ne 0 ]; then
+  echo "Usage: ./configure"
+  exit 1
+fi
+
+# コンパイラのバージョンをチェック
+if ! $CXX --version >/dev/null 2>&1; then
+  echo "Error: C++ compiler ($CXX) not found."
+  exit 1
+fi
+
+# コンパイラとオプションを設定
+CXX_VERSION=`$CXX -dumpversion`
+if [ "$CXX_VERSION" \< "4.7" ]; then
+  CXXFLAGS="-std=c++0x"
+elif [ "$CXX_VERSION" \< "4.9" ]; then
+  CXXFLAGS="-std=c++11"
+else
+  CXXFLAGS="-std=c++14"
+fi
+
+# Makefile を生成
+cat > Makefile <<EOF
+CXX = $CXX
+CXXFLAGS = $CXXFLAGS
+
+TARGET = $TARGET
+
+all: \$(TARGET)
+
+\$(TARGET): prime.o
+	\$(CXX) \$(CXXFLAGS) -o \$(TARGET) prime.o
+
+prime.o: prime.cpp
+	\$(CXX) \$(CXXFLAGS) -c prime.cpp
+
+clean:
+	rm -f \$(TARGET) prime.o
+EOF
+
+echo "configure completed successfully."
+exit 0
