@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env/python3
 
 def is_prime(n):
     if n <= 1:
